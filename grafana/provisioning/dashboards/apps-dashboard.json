@@ -6,38 +6,52 @@
   "panels": [
     {
       "type": "timeseries",
-      "title": "Requisições por Segundo (Req/s)",
+      "title": "Req/s (Python FastAPI)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
           "expr": "sum by (handler) (rate(http_requests_total{job=\"python-app\"}[5m]))",
-          "legendFormat": "Python - {{handler}}"
-        },
-        {
-          "expr": "sum by (handler) (rate(go_http_requests_total{job=\"go-app\"}[5m]))",
-          "legendFormat": "Go - {{handler}}"
+          "legendFormat": "{{handler}}"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Latência Média (Segundos)",
+      "title": "Req/s (Go App)",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
+          "expr": "sum by (handler) (rate(go_http_requests_total{job=\"go-app\"}[5m]))",
+          "legendFormat": "{{handler}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latência Média (Python FastAPI)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
           "expr": "sum by (handler) (rate(http_request_duration_seconds_sum{job=\"python-app\"}[5m])) / sum by (handler) (rate(http_request_duration_seconds_count{job=\"python-app\"}[5m]))",
-          "legendFormat": "Python - {{handler}}"
-        },
+          "legendFormat": "{{handler}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latência Média (Go App)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
         {
           "expr": "sum by (handler) (rate(go_http_request_duration_seconds_sum{job=\"go-app\"}[5m])) / sum by (handler) (rate(go_http_request_duration_seconds_count{job=\"go-app\"}[5m]))",
-          "legendFormat": "Go - {{handler}}"
+          "legendFormat": "{{handler}}"
         }
       ]
     },
     {
       "type": "timeseries",
       "title": "Status Codes (Python FastAPI)",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
       "targets": [
         {
           "expr": "sum by (status) (rate(http_requests_total{job=\"python-app\"}[5m]))",
@@ -48,7 +62,7 @@
     {
       "type": "timeseries",
       "title": "Status Codes (Go App)",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
       "targets": [
         {
           "expr": "sum by (status) (rate(go_http_requests_total{job=\"go-app\"}[5m]))",
