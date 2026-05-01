@@ -1,5 +1,7 @@
 # Teste técnico - Tarefas
 
+Arquivo base com a descrição do desafio.
+
 ### Criar duas aplicações
 
 - Utilize linguagens diferentes.

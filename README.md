@@ -1,15 +1,15 @@
 # Desafio Técnico DevOps
 
-Este repositório contém a resolução completa do teste, contemplando duas aplicações (Python/FastAPI e Go), sistema de cache (Redis), observabilidade (Prometheus + Grafana + cAdvisor) e integração contínua via GitHub Actions.
+Este repositório contém a resolução completa do desafio, contemplando duas aplicações (Python/Go), sistema de cache (Redis), observabilidade (Prometheus + Grafana + Node Exporter) e integração contínua via GitHub Actions.
 
 ## Documentação do Projeto
 
-O detalhamento da arquitetura, os diagramas e os pontos de melhoria estão separados nos seguintes documentos:
-- [**Planejamento e Arquitetura**](./planejamento.md)
-- [**Diagrama da Solução**](./diagrama.md)
-- [**Pontos de Melhoria**](./melhorias.md)
+O planejamento inicial, a arquitetura escolhida, o diagrama e os pontos de melhoria estão separados nos seguintes documentos:
+- [**Desafio proposto**](docs/desafio.md)
+- [**Planejamento**](docs/planejamento.md)
+- [**Diagrama da Solução e Pontos de Melhoria**](docs/diagrama.md)
 
-## Como Executar (Fácil e Rápido)
+## Como executar localmente
 
 Para facilitar a execução, as imagens Docker de ambas as aplicações são geradas automaticamente na pipeline de CI e armazenadas no **GitHub Container Registry (GHCR)**. Sendo assim, você não precisa "buildar" as imagens localmente, economizando tempo e recursos da sua máquina.
 
@@ -29,7 +29,7 @@ docker compose up -d
 ```
 > O Docker fará o pull das imagens mais recentes diretamente do GHCR e subirá todos os serviços.
 
-### O que estará rodando?
+### Componentes da stack
 
 | Serviço | URL de Acesso Local | Descrição |
 | --- | --- | --- |
@@ -42,7 +42,7 @@ docker compose up -d
 
 ---
 
-### Evidências de Teste (Cache Redis)
+### Cache Redis - Implementação e Evidências
 
 A camada de cache foi implementada utilizando o **Redis**. A rota `/hora` nas duas aplicações foi construída propositalmente para provar a eficiência e o controle de tempo do cache (TTL - *Time to Live*).
 
@@ -65,7 +65,7 @@ A configuração de cache no Go está localizada no arquivo `go-app/main.go`:
 ```go
 redisClient.Set(ctx, cacheKey, currentTime, 1*time.Minute) // 60 segundos de TTL
 ```
-- O comportamento é o mesmo, mas a retenção de memória na rota Go foi estipulada para durar **1 minuto completo**.
+- O comportamento é o mesmo, mas a retenção de memória na rota Go foi estipulada para durar **1 minuto**.
 
 | Processamento (Server) | Retorno em Memória (Cache) |
 | :---: | :---: |
@@ -73,16 +73,16 @@ redisClient.Set(ctx, cacheKey, currentTime, 1*time.Minute) // 60 segundos de TTL
 
 ---
 
-### Evidências de Observabilidade (Grafana & Prometheus)
+### Observabilidade - Implementação e Evidências
 
-A stack de observabilidade conta com o **Prometheus** (raspando as métricas ativamente) e o **Grafana** (provisionado de forma 100% automatizada e pronto para o uso). Abaixo estão os dashboards que sobem nativamente junto com a infraestrutura:
+A stack de observabilidade conta com o **Prometheus** (coletando métricas) e o **Grafana** para exposição e visualização (a stack será provisionada de forma 100% automatizada, incluindo dashboards pré configurados). Seguem abaixo as evidencias dos dashboards em funcionamento:
 
 #### Visão da Infraestrutura e Servidor (Node Exporter)
 Métricas detalhadas da máquina hospedeira (CPU, Memória, Disco e Rede) vitais para Operations:
 ![Dashboard de Infraestrutura](docs/img/evidencia-observabilidade-infra.png)
 
-#### Visão das Aplicações (Python FastAPI & Go nativo)
-Métricas focadas no comportamento do código, extraídas via middlewares customizados:
+#### Visão das métricas das Aplicações
+Métricas focadas no comportamento dos apps, extraídas via middlewares customizados:
 - **Volume de Requisições:** Total absoluto de chamadas em cada rota.
 - **Latência Média:** Tempo em segundos do processamento interno.
 - **Status Codes:** Contabilização de requisições por código HTTP (`2xx`, `4xx`, `5xx`).

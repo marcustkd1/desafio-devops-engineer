@@ -1,7 +1,6 @@
 # Arquitetura da Solução
 
-O diagrama a seguir descreve a topologia da infraestrutura proposta e o fluxo da integração contínua e atualização. 
-Pode ser visualizado nativamente no GitHub ou colado em ferramentas compatíveis com Mermaid (ex: Miro, Notion).
+O diagrama abaixo descreve a topologia da infraestrutura proposta e o fluxo da integração contínua e atualização.
 
 ```mermaid
 flowchart TD
@@ -124,7 +123,7 @@ flowchart TD
     CD -. "Aplica Infra como Código e\nAtualiza Contêineres dinamicamente" .-> Nuvem
 ```
 
-Embora a solução original implementada seja eficiente para testes e ambientes locais (visando cumprir o "Básico bem feito"), a transição para a arquitetura ilustrada acima resolve os seguintes gargalos:
+Embora a solução original implementada seja eficiente para testes e ambientes locais, a transição para a arquitetura ilustrada acima resolve os seguintes gargalos:
 
 ### 1. Segregação de Instâncias do Redis
 - **Diagnóstico:** As duas APIs compartilham o mesmo banco de cache local, o que pode causar colisão de chaves e falhas em cascata (se uma API derrubar o Redis por volume, afeta a outra).
