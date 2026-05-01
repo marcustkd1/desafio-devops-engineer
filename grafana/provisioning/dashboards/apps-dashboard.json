@@ -6,56 +6,53 @@
   "panels": [
     {
       "type": "timeseries",
-      "title": "Req/s (Python FastAPI)",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "title": "Requisições por Segundo (Req/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "rate(http_requests_total{job=\"python-app\"}[1m])",
-          "legendFormat": "{{method}} {{handler}} ({{status}})"
+          "expr": "sum by (handler) (rate(http_requests_total{job=\"python-app\"}[5m]))",
+          "legendFormat": "Python - {{handler}}"
+        },
+        {
+          "expr": "sum by (handler) (rate(go_http_requests_total{job=\"go-app\"}[5m]))",
+          "legendFormat": "Go - {{handler}}"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Req/s (Go App)",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "title": "Latência Média (Segundos)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "rate(go_http_requests_total{job=\"go-app\"}[1m])",
-          "legendFormat": "{{method}} {{handler}} ({{status}})"
+          "expr": "sum by (handler) (rate(http_request_duration_seconds_sum{job=\"python-app\"}[5m])) / sum by (handler) (rate(http_request_duration_seconds_count{job=\"python-app\"}[5m]))",
+          "legendFormat": "Python - {{handler}}"
+        },
+        {
+          "expr": "sum by (handler) (rate(go_http_request_duration_seconds_sum{job=\"go-app\"}[5m])) / sum by (handler) (rate(go_http_request_duration_seconds_count{job=\"go-app\"}[5m]))",
+          "legendFormat": "Go - {{handler}}"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Latência Média (Go App)",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
-      "targets": [
-        {
-          "expr": "rate(go_http_request_duration_seconds_sum{job=\"go-app\"}[1m]) / rate(go_http_request_duration_seconds_count{job=\"go-app\"}[1m])",
-          "legendFormat": "Go - {{handler}} ({{status}})"
-        }
-      ]
-    },
-    {
-      "type": "timeseries",
-      "title": "Status Codes (Go App)",
+      "title": "Status Codes (Python FastAPI)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
         {
-          "expr": "sum by (status) (rate(go_http_requests_total{job=\"go-app\"}[1m]))",
+          "expr": "sum by (status) (rate(http_requests_total{job=\"python-app\"}[5m]))",
           "legendFormat": "HTTP {{status}}"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Memória Usada (Go App)",
+      "title": "Status Codes (Go App)",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
-          "expr": "go_memstats_alloc_bytes{job=\"go-app\"}",
-          "legendFormat": "Bytes"
+          "expr": "sum by (status) (rate(go_http_requests_total{job=\"go-app\"}[5m]))",
+          "legendFormat": "HTTP {{status}}"
         }
       ]
     }
