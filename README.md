@@ -39,3 +39,34 @@ docker compose up -d
 | **Prometheus**| [http://localhost:9090](http://localhost:9090) | Interface principal do coletor de métricas. |
 | **Node Exporter** | [http://localhost:9100](http://localhost:9100) | Coletor de métricas da infraestrutura (CPU, RAM, Disco). |
 | **Redis** | `localhost:6379` | Banco de dados em memória atuando como cache (Acesso via CLI ou Client, sem interface web). |
+
+---
+
+### Evidências de Teste (Cache Redis)
+
+A camada de cache foi implementada utilizando o **Redis**. A rota `/hora` nas duas aplicações foi construída propositalmente para provar a eficiência e o controle de tempo do cache (TTL - *Time to Live*).
+
+O JSON retornado possui a chave `"source"`, indicando se o dado foi processado pela aplicação (`"server"`) ou devolvido da memória (`"cache"`).
+
+#### Teste na App Python (TTL: 10 Segundos)
+A configuração de cache no Python está localizada no arquivo `python-app/main.py`:
+```python
+redis_client.setex("python_app_time", 10, current_time) # 10 segundos de TTL
+```
+- **Primeiro acesso:** A aplicação processa a hora e retorna `"source": "server"`.
+- **Acessos sequenciais (dentro de 10s):** A hora é congelada e o Redis devolve o valor em memória `"source": "cache"`.
+
+| Processamento (Server) | Retorno em Memória (Cache) |
+| :---: | :---: |
+| ![Python Server](docs/img/evidencia-cache-python-01.png) | ![Python Cache](docs/img/evidencia-cache-python-02.png) |
+
+#### Teste na App Go (TTL: 60 Segundos)
+A configuração de cache no Go está localizada no arquivo `go-app/main.go`:
+```go
+redisClient.Set(ctx, cacheKey, currentTime, 1*time.Minute) // 60 segundos de TTL
+```
+- O comportamento é o mesmo, mas a retenção de memória na rota Go foi estipulada para durar **1 minuto completo**.
+
+| Processamento (Server) | Retorno em Memória (Cache) |
+| :---: | :---: |
+| ![Go Server](docs/img/evidencia-cache-go-01.png) | ![Go Cache](docs/img/evidencia-cache-go-02.png) |
