@@ -25,7 +25,7 @@ cd desafio-devops-engineer
 
 2. Suba a infraestrutura completa:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 > O Docker fará o pull das imagens mais recentes diretamente do GHCR e subirá todos os serviços.
 
