@@ -70,3 +70,20 @@ redisClient.Set(ctx, cacheKey, currentTime, 1*time.Minute) // 60 segundos de TTL
 | Processamento (Server) | Retorno em Memória (Cache) |
 | :---: | :---: |
 | ![Go Server](docs/img/evidencia-cache-go-01.png) | ![Go Cache](docs/img/evidencia-cache-go-02.png) |
+
+---
+
+### Evidências de Observabilidade (Grafana & Prometheus)
+
+A stack de observabilidade conta com o **Prometheus** (raspando as métricas ativamente) e o **Grafana** (provisionado de forma 100% automatizada e pronto para o uso). Abaixo estão os dashboards que sobem nativamente junto com a infraestrutura:
+
+#### Visão da Infraestrutura e Servidor (Node Exporter)
+Métricas detalhadas da máquina hospedeira (CPU, Memória, Disco e Rede) vitais para Operations:
+![Dashboard de Infraestrutura](docs/img/evidencia-observabilidade-infra.png)
+
+#### Visão das Aplicações (Python FastAPI & Go nativo)
+Métricas focadas no comportamento do código, extraídas via middlewares customizados:
+- **Volume de Requisições:** Total absoluto de chamadas em cada rota.
+- **Latência Média:** Tempo em segundos do processamento interno.
+- **Status Codes:** Contabilização de requisições por código HTTP (`2xx`, `4xx`, `5xx`).
+![Dashboard das Aplicações](docs/img/evidencia-observabilidade-apps.png)
