@@ -1,26 +1,29 @@
 # Planejamento do Projeto
 
-Este repositório contém a resolução do desafio para DevOps Engineer. O foco da implementação foi realizar "o básico bem feito", com uma arquitetura moderna, escalável e de fácil reprodutibilidade.
+Este arquivo contém a minha linha de raciocínio para a resolução do desafio para DevOps Engineer. O foco da implementação foi realizar "o básico bem feito", com uma arquitetura moderna, com telemetria básica e de fácil reprodutibilidade.
 
 ## Decisões Arquiteturais
 
-### 1. Aplicações
-- **App 1 (Python):** Utiliza FastAPI. Framework moderno, rápido e com documentação automática nativa, o que acelera o desenvolvimento de APIs e demonstra uso de ferramentas atualizadas no ecossistema Python.
-- **App 2 (Go):** Utiliza a biblioteca padrão `net/http`. Demonstra conhecimento sólido dos fundamentos da linguagem sem depender de frameworks externos para tarefas simples.
+### 1. Aplicações e Instrumentação
+- **App 1 (Python):** Utiliza FastAPI. Framework moderno, rápido e com documentação automática nativa e integração direta com o Prometheus.
+- **App 2 (Go):** Utiliza a biblioteca padrão `net/http` e o módulo oficial `client_golang`. Para a telemetria, foi desenvolvido um middleware customizado capaz de rastrear em tempo real o Volume Absoluto de Requisições, a distribuição de Status Codes e a Latência de resposta (Histogramas).
 
-### 2. Cache
-- **Redis:** Uma instância centralizada para gerenciar o cache de ambas as aplicações. É o padrão de mercado para caching em memória.
-- Foram implementados tempos de expiração (TTL) distintos para cada aplicação nas rotas que buscam o horário, cumprindo as regras do desafio (10s para Python, 1m para Go).
+### 2. Cache Estruturado
+- **Redis:** Uma instância local atua como repositório rápido na memória, mitigando a necessidade de as aplicações processarem repetidamente dados estáticos ou dinâmicos de baixa volatilidade.
+- Foram implementados tempos de expiração (TTL) distintos na rota de validação, provando o controle fino do motor de cache (10s para FastAPI e 60s para Go). A API responde dinamicamente se o dado foi processado pelo "server" ou devolvido pelo "cache".
 
-### 3. Observabilidade
-- A monitoração local foca em simplicidade e efetividade:
-  - **Prometheus:** Coleta as métricas expostas pelas aplicações (rota `/metrics`) e as métricas do cAdvisor.
-  - **cAdvisor:** Agente oficial do Google para monitoramento de recursos de contêineres Docker, essencial para visualizar o consumo de CPU/Memória.
-  - **Grafana:** Painel de visualização configurado para consolidar as métricas de infraestrutura e aplicação em um único lugar.
+### 3. Observabilidade e Telemetria
+Ao invés de apenas confirmar que os contêineres estão em execução, a stack entrega dados críticos e comparativos:
+- **Prometheus:** Coletor configurado para fazer *scrape* periódico (5s) das aplicações e do Host.
+- **Node Exporter:** Fornece uma visão aprofundada a nível de sistema (CPU, RAM, Discos, I/O) do host.
+- **Grafana e Autoprovisionamento:** Server já pré-configurado, com dois *Dashboards* default (Infra e Apps):
+    - **Visão dos Apps:** Gráficos comparativos (Python vs Go) focando no **Volume de Chamadas**, **Tempos de Resposta** e **Erros (HTTP 5xx / 4xx)**.
+    - **Visão da Infra:** Um detalhamento massivo da saúde do sistema, processado nativamente via Node Exporter.
 
-### 4. Facilidade de Execução (Docker Compose)
-- Toda a stack é orquestrada pelo Docker Compose.
-- Em vez de fazer o build local (que pode demorar e depender do poder computacional da máquina), o arquivo `docker-compose.yml` faz o pull das imagens já pré-construídas a partir de um Container Registry, agilizando o setup.
+### 4. Orquestração e Reprodutibilidade (Docker Compose)
+- A premissa do desafio era a simplicidade. Toda a infraestrutura sobe através de uma única instrução (`docker compose up -d`).
+- **Eficiência Local:** Ao invés de o projeto compilar as aplicações via `build`, o Compose faz apenas o *Pull* das Imagens pré-compiladas pela CI e armazenadas no GitHub Container Registry.
 
-### 5. Integração Contínua (CI)
-- **GitHub Actions:** O repositório possui uma pipeline que constrói e publica (push) as imagens no **GitHub Container Registry (GHCR)** automaticamente a cada alteração na branch principal, mantendo as imagens sempre atualizadas de forma transparente.
+### 5. Integração Contínua Inteligente (GitHub Actions)
+- **Multi-stage Build & GHCR:** Pipeline estruturada que constrói imagens otimizadas em Alpine Linux e as envia de forma segura para o GitHub Container Registry.
+- **Filtro de Gatilho (Paths):** A pipeline foi refinada para não desperdiçar minutos e recursos computacionais do runner free do Github caso o *commit* atualize apenas documentações (`*.md`) ou arquivos de configuração de infraestrutura (`.yml`, `.yaml`, `.md`). Os builds só ocorrem caso haja mutação na base de código do Python ou do Go.
