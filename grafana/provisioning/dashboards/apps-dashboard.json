@@ -6,34 +6,56 @@
   "panels": [
     {
       "type": "timeseries",
-      "title": "Requisições por Segundo (Python FastAPI)",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "title": "Req/s (Python FastAPI)",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
       "targets": [
         {
           "expr": "rate(http_requests_total{job=\"python-app\"}[1m])",
-          "legendFormat": "{{method}} {{handler}}"
+          "legendFormat": "{{method}} {{handler}} ({{status}})"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Memória Usada pela App Go",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "title": "Req/s (Go App)",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(go_http_requests_total{job=\"go-app\"}[1m])",
+          "legendFormat": "{{method}} {{handler}} ({{status}})"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latência Média (Go App)",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(go_http_request_duration_seconds_sum{job=\"go-app\"}[1m]) / rate(go_http_request_duration_seconds_count{job=\"go-app\"}[1m])",
+          "legendFormat": "Go - {{handler}} ({{status}})"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Status Codes (Go App)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(go_http_requests_total{job=\"go-app\"}[1m]))",
+          "legendFormat": "HTTP {{status}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memória Usada (Go App)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
           "expr": "go_memstats_alloc_bytes{job=\"go-app\"}",
           "legendFormat": "Bytes"
-        }
-      ]
-    },
-    {
-      "type": "timeseries",
-      "title": "Goroutines Ativas (App Go)",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-      "targets": [
-        {
-          "expr": "go_goroutines{job=\"go-app\"}",
-          "legendFormat": "Goroutines"
         }
       ]
     }

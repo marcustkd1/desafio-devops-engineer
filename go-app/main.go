@@ -7,8 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redis/go-redis/v9"
 )
@@ -16,7 +18,28 @@ import (
 var (
 	ctx         = context.Background()
 	redisClient *redis.Client
+
+	httpRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "go_http_requests_total",
+			Help: "Total number of HTTP requests",
+		},
+		[]string{"method", "handler", "status"},
+	)
+	httpRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "go_http_request_duration_seconds",
+			Help:    "Duration of HTTP requests",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"method", "handler", "status"},
+	)
 )
+
+func init() {
+	prometheus.MustRegister(httpRequestsTotal)
+	prometheus.MustRegister(httpRequestDuration)
+}
 
 type Response struct {
 	Source  string `json:"source,omitempty"`
@@ -38,6 +61,32 @@ func initRedis() {
 		Addr: fmt.Sprintf("%s:%s", host, port),
 		DB:   0,
 	})
+}
+
+// customResponseWriter para capturar o status code
+type customResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rw *customResponseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+func metricsMiddleware(handler string, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		
+		crw := &customResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+		next(crw, r)
+		
+		duration := time.Since(start).Seconds()
+		statusStr := strconv.Itoa(crw.statusCode)
+		
+		httpRequestsTotal.WithLabelValues(r.Method, handler, statusStr).Inc()
+		httpRequestDuration.WithLabelValues(r.Method, handler, statusStr).Observe(duration)
+	}
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
@@ -82,9 +131,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	initRedis()
 
-	http.HandleFunc("/", rootHandler)
-	http.HandleFunc("/hora", timeHandler)
-	http.HandleFunc("/health", healthHandler)
+	http.HandleFunc("/", metricsMiddleware("/", rootHandler))
+	http.HandleFunc("/hora", metricsMiddleware("/hora", timeHandler))
+	http.HandleFunc("/health", metricsMiddleware("/health", healthHandler))
 	http.Handle("/metrics", promhttp.Handler())
 
 	port := "8080"
