@@ -1,7 +1,5 @@
 # Desafio Técnico DevOps
 
-Bem-vindo(a) ao repositório do desafio técnico para DevOps.
-
 Este repositório contém a resolução completa do teste, contemplando duas aplicações (Python/FastAPI e Go), sistema de cache (Redis), observabilidade (Prometheus + Grafana + cAdvisor) e integração contínua via GitHub Actions.
 
 ## Documentação do Projeto
@@ -33,13 +31,11 @@ docker-compose up -d
 
 ### O que estará rodando?
 
-| Serviço | Porta | Descrição |
+| Serviço | URL de Acesso Local | Descrição |
 | --- | --- | --- |
-| **App Python** | `8000` | Aplicação FastAPI com cache de 10s. Rotas: `/` e `/hora`. |
-| **App Go** | `8080` | Aplicação Go nativa com cache de 60s. Rotas: `/` e `/hora`. |
-| **Redis** | `6379` | Banco de dados em memória atuando como cache. |
-| **Grafana** | `3000` | Painel de métricas. (Login Padrão: `admin` / Pode ser pulado na primeira tela). |
-| **Prometheus** | `9090` | Interface do coletor de métricas das aplicações. |
-| **cAdvisor** | `8081` | Interface com métricas de infraestrutura dos containers Docker. |
-
-> Ambas as aplicações possuem também as rotas `/health` e `/metrics` ativas.
+| **App Python** | [http://localhost:8000](http://localhost:8000) | API em FastAPI (Cache de 10s). Rotas: [Texto](http://localhost:8000/), [Hora](http://localhost:8000/hora), [Health](http://localhost:8000/health), [Métricas](http://localhost:8000/metrics) |
+| **App Go** | [http://localhost:8080](http://localhost:8080) | API em Go nativo (Cache de 60s). Rotas: [Texto](http://localhost:8080/), [Hora](http://localhost:8080/hora), [Health](http://localhost:8080/health), [Métricas](http://localhost:8080/metrics) |
+| **Grafana** | [http://localhost:3000](http://localhost:3000) | Painel de visualização de métricas (Login/Senha Padrão: `admin`). |
+| **Prometheus**| [http://localhost:9090](http://localhost:9090) | Interface principal do coletor de métricas. |
+| **cAdvisor** | [http://localhost:8081](http://localhost:8081) | Interface web para monitoramento de recursos dos containers Docker. |
+| **Redis** | `localhost:6379` | Banco de dados em memória atuando como cache (Acesso via CLI ou Client, sem interface web). |
