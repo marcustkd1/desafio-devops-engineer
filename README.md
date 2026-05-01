@@ -37,5 +37,5 @@ docker-compose up -d
 | **App Go** | [http://localhost:8080](http://localhost:8080) | API em Go nativo (Cache de 60s). Rotas: [Texto](http://localhost:8080/), [Hora](http://localhost:8080/hora), [Health](http://localhost:8080/health), [Métricas](http://localhost:8080/metrics) |
 | **Grafana** | [http://localhost:3000](http://localhost:3000) | Painel de visualização de métricas (Login/Senha Padrão: `admin`). |
 | **Prometheus**| [http://localhost:9090](http://localhost:9090) | Interface principal do coletor de métricas. |
-| **cAdvisor** | [http://localhost:8081](http://localhost:8081) | Interface web para monitoramento de recursos dos containers Docker. |
+| **Node Exporter** | [http://localhost:9100](http://localhost:9100) | Coletor de métricas da infraestrutura (CPU, RAM, Disco). |
 | **Redis** | `localhost:6379` | Banco de dados em memória atuando como cache (Acesso via CLI ou Client, sem interface web). |

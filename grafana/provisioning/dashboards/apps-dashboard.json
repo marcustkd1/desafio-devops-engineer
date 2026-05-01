@@ -1,0 +1,41 @@
+{
+  "title": "Aplicações - FastAPI & Go",
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "refresh": "5s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Requisições por Segundo (Python FastAPI)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{job=\"python-app\"}[1m])",
+          "legendFormat": "{{method}} {{handler}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memória Usada pela App Go",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "go_memstats_alloc_bytes{job=\"go-app\"}",
+          "legendFormat": "Bytes"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Goroutines Ativas (App Go)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "go_goroutines{job=\"go-app\"}",
+          "legendFormat": "Goroutines"
+        }
+      ]
+    }
+  ]
+}
