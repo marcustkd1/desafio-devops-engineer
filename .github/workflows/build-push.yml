@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'python-app/**'
+      - 'go-app/**'
 
 env:
   REGISTRY: ghcr.io
@@ -26,7 +29,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # O docker exige que o nome do dono/repositório esteja em minúsculo
       - name: Downcase REPO
         run: |
           echo "REPO=${GITHUB_REPOSITORY_OWNER,,}" >>${GITHUB_ENV}
