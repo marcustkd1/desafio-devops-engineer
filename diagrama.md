@@ -6,31 +6,31 @@ Pode ser visualizado nativamente no GitHub ou colado em ferramentas compatíveis
 ```mermaid
 flowchart TD
     %% Atores
-    User((Usuário Final))
-    Dev((Desenvolvedor/DevOps))
+    User(("Usuário Final"))
+    Dev(("Desenvolvedor/DevOps"))
 
-    subgraph CICD [Atualização de Código - CI / GitHub Actions]
-        CodePush[Git Push (App Go/Python)] --> BuildImages(Build Docker)
-        BuildImages --> PushGHCR[(GitHub Container Registry)]
+    subgraph CICD ["Atualização de Código - CI / GitHub Actions"]
+        CodePush["Git Push (App Go/Python)"] --> BuildImages("Build Docker")
+        BuildImages --> PushGHCR[("GitHub Container Registry")]
     end
 
-    subgraph CDLocal [Atualização de Infraestrutura - CD Local]
-        InfraUpdate[Git Push / Alteração Local (YAMLs)] --> DockerReload(docker compose up -d)
+    subgraph CDLocal ["Atualização de Infraestrutura - CD Local"]
+        InfraUpdate["Git Push / Alteração Local (YAMLs)"] --> DockerReload("docker compose up -d")
         PushGHCR -. "docker compose pull" .-> DockerReload
     end
 
-    subgraph InfraLocal [Infraestrutura Local - Docker Compose / Servidor]
+    subgraph InfraLocal ["Infraestrutura Local - Docker Compose / Servidor"]
         %% Aplicações
-        AppPython(App 1 - Python FastAPI\nPorta: 8000)
-        AppGo(App 2 - Go net/http\nPorta: 8080)
+        AppPython("App 1 - Python FastAPI\nPorta: 8000")
+        AppGo("App 2 - Go net/http\nPorta: 8080")
         
         %% Componentes auxiliares
-        Redis[(Redis Cache)]
+        Redis[("Redis Cache")]
         
         %% Observabilidade
-        Prometheus(Prometheus\nPorta: 9090)
-        NodeExporter(Node Exporter\nPorta: 9100)
-        Grafana(Grafana\nPorta: 3000)
+        Prometheus("Prometheus\nPorta: 9090")
+        NodeExporter("Node Exporter\nPorta: 9100")
+        Grafana("Grafana\nPorta: 3000")
     end
 
     %% Fluxos de Atualização (Deploy)
@@ -70,38 +70,38 @@ O diagrama abaixo representa como a arquitetura atual evoluiria para um ambiente
 ```mermaid
 flowchart TD
     %% Atores
-    User((Usuário Final))
-    Dev((Desenvolvedor))
+    User(("Usuário Final"))
+    Dev(("Desenvolvedor"))
 
-    subgraph CI_CD [Esteira CI/CD Completa]
-        CodePush[Git Push] --> LintTest(Lint & Testes Unitários)
-        LintTest --> SecScan(Scan de Segurança - Trivy)
-        SecScan --> BuildPush(Build & Push de Imagens)
-        BuildPush --> CD(Continuous Deployment\nex: Terraform / ArgoCD)
+    subgraph CI_CD ["Esteira CI/CD Completa"]
+        CodePush["Git Push"] --> LintTest("Lint & Testes Unitários")
+        LintTest --> SecScan("Scan de Segurança - Trivy")
+        SecScan --> BuildPush("Build & Push de Imagens")
+        BuildPush --> CD("Continuous Deployment\nex: Terraform / ArgoCD")
     end
 
-    subgraph Nuvem [Infraestrutura Cloud - AWS/GCP]
+    subgraph Nuvem ["Infraestrutura Cloud - AWS/GCP"]
         %% Borda
-        ApiGateway{{API Gateway / Load Balancer\nKong / AWS ALB}}
+        ApiGateway{{"API Gateway / Load Balancer\nKong / AWS ALB"}}
 
         %% Compute (Serviços Gerenciados)
-        subgraph Orquestracao [Serverless / Orquestrador Gerenciado - ECS / Cloud Run]
-            AppPython[App Python FastAPI\nMúltiplas Réplicas]
-            AppGo[App Go\nMúltiplas Réplicas]
-            LogAgent((Agente de Logs\nFluent-bit))
+        subgraph Orquestracao ["Serverless / Orquestrador Gerenciado - ECS / Cloud Run"]
+            AppPython["App Python FastAPI\nMúltiplas Réplicas"]
+            AppGo["App Go\nMúltiplas Réplicas"]
+            LogAgent(("Agente de Logs\nFluent-bit"))
         end
         
         %% Bancos / Caches segregados
-        subgraph Databases [Caches Gerenciados - ElastiCache/Memorystore]
-            RedisPython[(Redis Dedicado\nApp Python)]
-            RedisGo[(Redis Dedicado\nApp Go)]
+        subgraph Databases ["Caches Gerenciados - ElastiCache/Memorystore"]
+            RedisPython[("Redis Dedicado\nApp Python")]
+            RedisGo[("Redis Dedicado\nApp Go")]
         end
     end
 
-    subgraph SaaS_Observabilidade [Plataforma SaaS de Observabilidade]
-        Datadog((Datadog / New Relic))
-        Logs((Logs Centralizados))
-        Metrics((Métricas e Alertas IA))
+    subgraph SaaS_Observabilidade ["Plataforma SaaS de Observabilidade"]
+        Datadog(("Datadog / New Relic"))
+        Logs(("Logs Centralizados"))
+        Metrics(("Métricas e Alertas IA"))
     end
 
     %% Relacionamentos do Usuário
