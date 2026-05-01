@@ -9,17 +9,17 @@ flowchart TD
     User((Usuário Final))
     Dev((Desenvolvedor/DevOps))
 
-    subgraph Atualização de Código (CI) [GitHub Actions]
+    subgraph CICD [Atualização de Código - CI / GitHub Actions]
         CodePush[Git Push (App Go/Python)] --> BuildImages(Build Docker)
         BuildImages --> PushGHCR[(GitHub Container Registry)]
     end
 
-    subgraph Atualização de Infraestrutura (CD Local)
+    subgraph CDLocal [Atualização de Infraestrutura - CD Local]
         InfraUpdate[Git Push / Alteração Local (YAMLs)] --> DockerReload(docker compose up -d)
         PushGHCR -. "docker compose pull" .-> DockerReload
     end
 
-    subgraph Infraestrutura Local [Docker Compose / Servidor]
+    subgraph InfraLocal [Infraestrutura Local - Docker Compose / Servidor]
         %% Aplicações
         AppPython(App 1 - Python FastAPI\nPorta: 8000)
         AppGo(App 2 - Go net/http\nPorta: 8080)
