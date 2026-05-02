@@ -4,10 +4,10 @@ Este repositório contém a resolução completa do desafio, contemplando duas a
 
 ## Documentação do Projeto
 
-O planejamento inicial, a arquitetura escolhida, o diagrama e os pontos de melhoria estão separados nos seguintes documentos:
+O planejamento inicial, diagrama arquitetural e sugestões de melhorias estão separados nos seguintes documentos:
 - [**Desafio proposto**](docs/desafio.md)
 - [**Planejamento**](docs/planejamento.md)
-- [**Diagrama da Solução e Pontos de Melhoria**](docs/diagrama.md)
+- [**Diagrama da Solução e Sugestões de Melhoria**](docs/diagrama.md)
 
 ## Como executar localmente
 

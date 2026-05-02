@@ -42,9 +42,11 @@ func init() {
 }
 
 type Response struct {
-	Source  string `json:"source,omitempty"`
-	Time    string `json:"time,omitempty"`
-	Message string `json:"message,omitempty"`
+	Source   string  `json:"source,omitempty"`
+	Time     string  `json:"time,omitempty"`
+	Message  string  `json:"message,omitempty"`
+	CacheKey string  `json:"cache_key,omitempty"`
+	TTL      float64 `json:"ttl,omitempty"`
 }
 
 func initRedis() {
@@ -100,7 +102,12 @@ func timeHandler(w http.ResponseWriter, r *http.Request) {
 
 	val, err := redisClient.Get(ctx, cacheKey).Result()
 	if err == nil {
-		json.NewEncoder(w).Encode(Response{Source: "cache", Time: val})
+		ttlDuration, _ := redisClient.TTL(ctx, cacheKey).Result()
+		ttl := ttlDuration.Seconds()
+		if ttl < 0 {
+			ttl = 0
+		}
+		json.NewEncoder(w).Encode(Response{Source: "cache", Time: val, CacheKey: cacheKey, TTL: ttl})
 		return
 	}
 
@@ -108,7 +115,7 @@ func timeHandler(w http.ResponseWriter, r *http.Request) {
 	// Cache por 1 minuto (60 segundos)
 	redisClient.Set(ctx, cacheKey, currentTime, 1*time.Minute)
 
-	json.NewEncoder(w).Encode(Response{Source: "server", Time: currentTime})
+	json.NewEncoder(w).Encode(Response{Source: "server", Time: currentTime, CacheKey: cacheKey, TTL: 60})
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {

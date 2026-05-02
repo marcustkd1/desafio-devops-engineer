@@ -24,13 +24,14 @@ def get_time():
     cached_time = redis_client.get(cache_key)
     
     if cached_time:
-        return {"source": "cache", "time": cached_time}
+        ttl = redis_client.ttl(cache_key)
+        return {"source": "cache", "time": cached_time, "cache_key": cache_key, "ttl": ttl}
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # Cache por 10 segundos
     redis_client.setex(cache_key, 10, current_time)
     
-    return {"source": "server", "time": current_time}
+    return {"source": "server", "time": current_time, "cache_key": cache_key, "ttl": 10}
 
 @app.get("/health")
 def health_check():
