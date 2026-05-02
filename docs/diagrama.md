@@ -131,7 +131,7 @@ Embora a solução original implementada seja eficiente para testes e ambientes 
 
 ### 2. Orquestração e Escalabilidade (Serviços Gerenciados)
 - **Diagnóstico:** O Docker Compose rodando em uma máquina única não possui escalabilidade horizontal automática nem alta disponibilidade.
-- **Melhoria:** Migrar para serviços serverless ou orquestradores gerenciados como ECS com Fargate (AWS) ou Cloud Run (GCP). Isso removes o custo operacional de gerir o host e permite escalar de zero a *N* instâncias dinamicamente. (Kubernetes puro seria "over-engineering" para apenas duas rotas).
+- **Melhoria:** Migrar para serviços serverless ou orquestradores gerenciados como ECS com Fargate (AWS) ou Cloud Run (GCP). Isso remove o custo operacional de gerir o host e permite escalar de zero a *N* instâncias dinamicamente. (Kubernetes puro seria "over-engineering" para apenas duas rotas).
 
 ### 3. API Gateway / Ingress Controller
 - **Diagnóstico:** As portas das aplicações (8000 e 8080) ficam diretamente expostas para a internet/usuário.
@@ -148,3 +148,7 @@ Embora a solução original implementada seja eficiente para testes e ambientes 
 ### 6. Pipeline de CI/CD Completa
 - **Diagnóstico:** A Pipeline hoje realiza apenas a etapa de CI (Build/Push das Imagens). A etapa de atualização na máquina (CD) demanda um comando manual (`docker compose pull && docker compose up -d`).
 - **Melhoria:** Adicionar Linters de código, qualidade e segurança (ex: Trivy) na etapa de CI. Para o CD, criar um fluxo 100% automatizado, com deploy automático via GitOps (ArgoCD se kubernetes) ou rotinas via Terraform aplicando diretamente nos provedores Cloud.
+
+### 7. Configuração do TTL do Redis através de variáveis de ambiente
+- **Diagnóstico:** A configuração do TTL do Redis é feita de forma hardcoded nos arquivos main.py e main.go.
+- **Melhoria:** Configurar o TTL do Redis através de variáveis de ambiente. Exemplo: TTL_REDIS_APP_PYTHON=10, TTL_REDIS_APP_GO=60.
