@@ -77,6 +77,14 @@ redisClient.Set(ctx, cacheKey, currentTime, 1*time.Minute) // 60 segundos de TTL
 
 A stack de observabilidade conta com o **Prometheus** (coletando métricas) e o **Grafana** para exposição e visualização (a stack será provisionada de forma 100% automatizada, incluindo dashboards pré configurados). Seguem abaixo as evidencias dos dashboards em funcionamento:
 
+### Como fazer login no Grafana
+
+Credenciais iniciais para acesso:
+- **Usuário:** admin
+- **Senha:** admin
+
+>Obs: A senha será solicitada na primeira vez que o usuário acessar o Grafana. Em sequencia solicitará a troca para uma senha mais segura. Lembrando que a senha é valida somente para a sessão atual do container e em caso de ambienttes produtivos a estratégia de autenticação deve ser aprimorada, bem como a utilização de variáveis de ambiente para configuração dos parâmetros de acesso. 
+
 #### Visão da Infraestrutura e Servidor (Node Exporter)
 Métricas detalhadas da máquina hospedeira (CPU, Memória, Disco e Rede) vitais para Operations:
 ![Dashboard de Infraestrutura](docs/img/evidencia-observabilidade-infra.png)
